@@ -12,6 +12,7 @@ def initialize(options)
   @film_id  = options['film_id'].to_i
 end
 
+# instance methods
 def save()
   sql = "INSERT INTO tickets
   (
