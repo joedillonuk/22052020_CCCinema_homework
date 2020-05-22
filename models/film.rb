@@ -3,14 +3,12 @@ require_relative("../db/sql_runner")
 class Film
 
 attr_reader :id
-attr_accessor :title, :price, :total_tickets, :screening_time
+attr_accessor :title, :price
 
 def initialize(options)
   @id = options['id'].to_i if options['id']
   @title = options['title']
   @price = options['price'].to_i
-  @total_tickets = options['total_tickets'].to_i
-  @screening_time = options['screening_time'].to_i
 end
 
 # instance methods
@@ -18,24 +16,22 @@ def save()
   sql = "INSERT INTO films
   (
     title,
-    price,
-    total_tickets,
-    screening_time
+    price
   )
   VALUES
   (
-    $1, $2, $3, $4
+    $1, $2
   )
   RETURNING id"
-  values = [@title, @price, @total_tickets, @screening_time]
+  values = [@title, @price]
   film = SqlRunner.run( sql,values ).first
   @id = film['id'].to_i
 end
 
 # updates details of given film on CCCinema database
 def update # EXTENSION
-  sql = "UPDATE films SET title = $1, price = $2, total_tickets = $3, screening_time = $4 WHERE id = $5"
-  values = [@title, @price, @total_tickets, @screening_time, @id]
+  sql = "UPDATE films SET title = $1, price = $2 WHERE id = $3"
+  values = [@title, @price, @id]
   SqlRunner.run(sql, values)
 end
 
@@ -56,6 +52,12 @@ def customers()
   pg_result = SqlRunner.run(sql, values)
   customers = pg_result.map{|customer_hash| Customer.new(customer_hash)}
   return customers
+end
+
+# returns the total number of customers for a given film
+def customer_total()
+  result = self.customers()
+  return result.count
 end
 
 

@@ -46,6 +46,36 @@ def delete() # EXTENSION
   SqlRunner.run(sql, values)
 end
 
+# return the number of tickets purchased by a given customer
+def tickets()
+  sql = "SELECT * FROM tickets
+  WHERE customer_id = $1"
+  values = [@id]
+  artist = SqlRunner.run( sql,values )
+  result = Customer.new( artist )
+  return result.count
+end
+
+
+# reduces customer's funds by the ticket cost when purchasing a ticket
+# DOES NOT create a new ticket object.
+def buy_ticket(film)
+  if @funds >= film.price
+    @funds -= film.price
+  else
+    p "Sorry, you're £#{(film.price-@funds)} short; this film is £#{film.price}."
+  end
+end
+
+# returns the total number of tickets bought by a given customer
+def tickets()
+  sql = " SELECT tickets.* FROM tickets WHERE tickets.customer_id = $1"
+  values = [@id]
+  pg_result = SqlRunner.run(sql, values)
+  tickets = pg_result.map{|ticket_hash| Ticket.new(ticket_hash)}
+  return tickets.count
+end
+
 
 # return all films a customer has bought tickets for
 def films()

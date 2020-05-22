@@ -15,15 +15,16 @@ customer2.save()
 customer3 = Customer.new({ 'name' => 'Jane Plough', 'funds' => 100})
 customer3.save()
 
-film1 = Film.new({ 'title' => 'Macbeth', 'price' => 10, 'total_tickets' => 20, 'screening_time' => 1700})
+film1 = Film.new({'title' => 'Macbeth', 'price' => 10})
 film1.save()
-film2 = Film.new({ 'title' => 'Macbeth 3D', 'price' => 15, 'total_tickets' => 10, 'screening_time' => 1730})
+film2 = Film.new({ 'title' => 'Macbeth 3D', 'price' => 15})
 film2.save()
 
 
 ticket1 = Ticket.new('customer_id' => customer1.id, 'film_id' => film1.id)
 ticket1.save()
-
+ticket2 = Ticket.new('customer_id' => customer2.id, 'film_id' => film1.id)
+ticket2.save()
 
 
 binding.pry
