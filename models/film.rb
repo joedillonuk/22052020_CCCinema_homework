@@ -69,17 +69,18 @@ def most_popular()
   FROM tickets WHERE tickets.film_id = $1
   GROUP BY screening_id"
   values = [@id]
-  p pg_result = SqlRunner.run(sql, values)
+  pg_result = SqlRunner.run(sql, values)
+
+  # if gate to return string if no tickets have been sold for a particular film
   if  pg_result.count == 0
     return "No tickets have been sold for #{@title} so far."
 end
+
+# storing number of occurences of a particular screening as variables
 tickets_sold = pg_result[0]['frequency']
   screening_id =  pg_result[0]['screening_id'].to_i
-  # result = pg_result.map{|screening_hash| Film.new(screening_hash)}
-# p screening = Screening.new(pg_result[0])
-  # screening =  pg_result[0]
-p screening_id
 
+# SQL query to return the time of the screening the above screening_id refers to
 sql = " SELECT screenings.*
 FROM screenings
 WHERE screenings.id = $1"
@@ -87,7 +88,8 @@ values = [screening_id]
 pg_result = SqlRunner.run(sql, values)
 screening = pg_result[0]
 
-  p "The most popular screening for #{@title} is at #{screening['screening_time']} with #{tickets_sold} tickets sold."
+# returning result as string.
+  return "The most popular screening for #{@title} is at #{screening['screening_time']} with #{tickets_sold} tickets sold."
 end
 
 # SELECT screening_id, COUNT(*) AS Frequency
