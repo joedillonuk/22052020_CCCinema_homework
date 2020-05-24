@@ -62,7 +62,34 @@ end
 
 
 
-# Class methods
+# returns the screening of a given film with the max number of tickets sold
+def most_popular()
+  sql = " SELECT screening_id,
+  COUNT(*) AS Frequency
+  FROM tickets WHERE tickets.film_id = $1
+  GROUP BY screening_id"
+  values = [@id]
+  p pg_result = SqlRunner.run(sql, values)
+  tickets_sold = pg_result[0]['frequency']
+  screening_id =  pg_result[0]['screening_id'].to_i
+  # result = pg_result.map{|screening_hash| Film.new(screening_hash)}
+# p screening = Screening.new(pg_result[0])
+  # screening =  pg_result[0]
+p screening_id
+
+sql = " SELECT screenings.*
+FROM screenings
+WHERE screenings.id = $1"
+values = [screening_id]
+pg_result = SqlRunner.run(sql, values)
+screening = pg_result[0]
+
+  p "The most popular screening for #{@title} is at #{screening['screening_time']} with #{tickets_sold} tickets sold."
+end
+
+# SELECT screening_id, COUNT(*) AS Frequency
+# FROM tickets WHERE tickets.film_id = 33
+# GROUP BY screening_id
 
 def self.all()
   sql = "SELECT * FROM films"

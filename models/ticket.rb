@@ -3,13 +3,15 @@ require_relative("../db/sql_runner")
 class Ticket
 
   attr_reader :id
-  attr_accessor :customer_id, :film_id
+  attr_accessor :customer_id, :film_id, :screening_id
 
 
 def initialize(options)
   @id = options['id'].to_i if options['id']
   @customer_id = options['customer_id'].to_i
   @film_id  = options['film_id'].to_i
+  @screening_id  = options['screening_id'].to_i
+
 end
 
 # instance methods
@@ -17,22 +19,23 @@ def save()
   sql = "INSERT INTO tickets
   (
     customer_id,
-    film_id
+    film_id,
+    screening_id
   )
   VALUES
   (
-    $1, $2
+    $1, $2, $3
   )
   RETURNING id"
-  values = [@customer_id, @film_id]
+  values = [@customer_id, @film_id, @screening_id]
   ticket = SqlRunner.run( sql,values ).first
   @id = ticket['id'].to_i
 end
 
 # updates details of given ticket on CCCinema database
 def update # EXTENSION
-  sql = "UPDATE tickets SET customer_id = $1, film_id = $2 WHERE id = $3"
-  values = [@customer_id, @film_id, @id]
+  sql = "UPDATE tickets SET customer_id = $1, film_id = $2, screening_id = $3 WHERE id = $4"
+  values = [@customer_id, @film_id, @screening_id, @id]
   SqlRunner.run(sql, values)
 end
 
@@ -52,6 +55,17 @@ def film()
   film_hash = pg_result[0]
   film = Film.new(film_hash)
   return film
+end
+
+
+# return the screening a ticket is for
+def screening()
+  sql = "SELECT * FROM screenings WHERE id = $1"
+  values = [@screening_id]
+  pg_result = SqlRunner.run(sql, values)
+  screening_hash = pg_result[0]
+  screening = Screening.new(screening_hash)
+  return screening
 end
 
 
