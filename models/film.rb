@@ -70,7 +70,10 @@ def most_popular()
   GROUP BY screening_id"
   values = [@id]
   p pg_result = SqlRunner.run(sql, values)
-  tickets_sold = pg_result[0]['frequency']
+  if  pg_result.count == 0
+    return "No tickets have been sold for #{@title} so far."
+end
+tickets_sold = pg_result[0]['frequency']
   screening_id =  pg_result[0]['screening_id'].to_i
   # result = pg_result.map{|screening_hash| Film.new(screening_hash)}
 # p screening = Screening.new(pg_result[0])
